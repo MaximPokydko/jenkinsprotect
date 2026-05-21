@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'ENV',
+            choices: ['dev', 'stage', 'prod'],
+            description: 'Environment'
+        )
+    }
+
     stages {
 
         stage('Clone') {
