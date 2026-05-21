@@ -26,7 +26,7 @@ pipeline {
                 sh '''
                 docker run -d \
                   --name mini-ci-app \
-                  -p 8080:8000 \
+                  -p 8081:8000 \
                   mini-ci-app
                 '''
             }
@@ -37,7 +37,7 @@ pipeline {
                 sh '''
                 sleep 3
                 docker ps
-                curl http://localhost:8080/health || true
+                curl http://localhost:8081/health || true
                 '''
             }
         }
