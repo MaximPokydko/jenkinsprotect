@@ -4,8 +4,8 @@ pipeline {
     parameters {
         choice(
             name: 'ENV',
-            choices: ['dev', 'stage', 'prod'],
-            description: 'Environment'
+            choices: ['dev', 'prod'],
+            description: 'Choose environment'
         )
     }
 
@@ -13,47 +13,36 @@ pipeline {
 
         stage('Clone') {
             steps {
-                echo 'Repo cloned'
+                git 'https://github.com/USERNAME/REPO.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Deploy') {
             steps {
-                sh 'docker build -t mini-ci-app .'
+                echo "Deploying to ${params.ENV}"
+
+                sshPublisher(
+                    publishers: [
+                        sshPublisherDesc(
+                            configName: 'myserver',
+                            transfers: [
+                                sshTransfer(
+                                    sourceFiles: '**/*',
+                                    removePrefix: '',
+                                    remoteDirectory: "deploy/${params.ENV}"
+                                )
+                            ],
+                            verbose: true
+                        )
+                    ]
+                )
             }
         }
 
-        stage('Stop Old Container') {
+        stage('Clean Workspace') {
             steps {
-                sh 'docker rm -f mini-ci-app || true'
+                cleanWs()
             }
-        }
-
-        stage('Run Container') {
-            steps {
-                sh '''
-                docker run -d \
-                  --name mini-ci-app \
-                  -p 8081:8000 \
-                  mini-ci-app
-                '''
-            }
-        }
-
-        stage('Check') {
-            steps {
-                sh '''
-                sleep 3
-                docker ps
-                curl http://localhost:8081/health || true
-                '''
-            }
-        }
-    }
-
-    post {
-        always {
-            deleteDir()
         }
     }
 }
