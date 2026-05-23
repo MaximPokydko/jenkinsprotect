@@ -5,13 +5,13 @@ pipeline {
         choice(
             name: 'ENV',
             choices: ['dev', 'prod'],
-            description: 'Choose environment'
+            description: 'Environment'
         )
     }
 
     stages {
 
-        stage('Clone') {
+        stage('Checkout') {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/MaximPokydko/jenkinsprotect.git'
@@ -21,28 +21,18 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo "Deploying to ${params.ENV}"
-
-                sshPublisher(
-                    publishers: [
-                        sshPublisherDesc(
-                            configName: 'myserver',
-                            transfers: [
-                                sshTransfer(
-                                    sourceFiles: '**/*',
-                                    removePrefix: '',
-                                    remoteDirectory: "deploy/${params.ENV}"
-                                )
-                            ],
-                            verbose: true
-                        )
-                    ]
-                )
             }
         }
 
-        stage('Clean Workspace') {
+        stage('Auto Deploy Info') {
             steps {
-                cleanWs()
+                echo "Auto deploy triggered by SCM change"
+            }
+        }
+
+        stage('Clean') {
+            steps {
+                deleteDir()
             }
         }
     }
