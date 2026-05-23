@@ -13,7 +13,7 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git 'https://github.com/USERNAME/REPO.git'
+                git 'https://github.com/MaximPokydko/jenkinsprotect.git'
             }
         }
 
