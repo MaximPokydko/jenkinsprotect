@@ -13,7 +13,8 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git 'https://github.com/MaximPokydko/jenkinsprotect.git'
+                git branch: 'main',
+                    url: 'https://github.com/MaximPokydko/jenkinsprotect.git'
             }
         }
 
